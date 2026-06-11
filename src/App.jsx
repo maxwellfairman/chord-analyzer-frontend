@@ -131,10 +131,10 @@ const testAnalyses = [
 ];
 const TITLES = ["Chord Analysis Guesses", "Past Analyses", "", ""];
 function convertData(data) {
-  const info0 = data?.["Chords with roots"][0];
-  const info1 = data?.["Chords with roots"][1];
-  const info2 = data?.["Chords without roots"][0];
-  const info3 = data?.["Chords without roots"][1];
+  const info0 = data?.["Chords with roots"]?.[0];
+  const info1 = data?.["Chords with roots"]?.[1];
+  const info2 = data?.["Chords without roots"]?.[0];
+  const info3 = data?.["Chords without roots"]?.[1];
 
   const rows = [
     {
