@@ -108,7 +108,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     lastChordKeyRef.current = key;
 
     debounceRef.current = setTimeout(() => {
-      fetch("https://chord-analyzer-backend.onrender.com/", {
+      fetch("https://chord-analyzer-backend.onrender.com/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notes: snapshot }),
