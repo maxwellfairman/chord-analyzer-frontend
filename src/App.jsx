@@ -256,7 +256,8 @@ function App() {
             playRoot={playRoot}
             impliedRoot={impliedRoot}
           />
-          <button onClick={() => setPlayRoot(!playRoot)}>
+
+          <button className="btn-cool" onClick={() => setPlayRoot(!playRoot)}>
             {playRoot ? "Don't play implied root" : "Play implied root"}
           </button>
         </div>

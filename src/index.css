@@ -8,7 +8,15 @@ table {
   letter-spacing: 1px;
   font-size: 0.8rem;
 }
-
+h2 {
+  text-align: center;
+}
+h1 {
+  text-align: center;
+}
+h3 {
+  text-align: center;
+}
 td,
 th {
   border: 1px solid rgb(190, 190, 190);
@@ -30,7 +38,54 @@ tr:nth-child(even) td {
 tr:nth-child(odd) td {
   background-color: rgb(245, 245, 245);
 }
+.btn-cool {
+  /* Step 1: Reset default browser styles */
+  background-color: #3b82f6; /* Modern royal blue */
+  color: #ffffff;
+  border: none;
+  outline: none;
 
+  /* Step 2: Typography & Layout */
+
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 24px; /* Generous clickable area */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Step 3: Aesthetics */
+  border-radius: 8px; /* Smooth rounded corners */
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer; /* Tells users it's clickable */
+
+  /* Step 4: Smooth micro-interactions */
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover state: When the user moves their mouse over it */
+.btn-cool:hover {
+  background-color: #2563eb; /* Slightly darker blue */
+
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Active state: When the button is actually being clicked */
+.btn-cool:active {
+  background-color: #1d4ed8; /* Deepest blue */
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Flattened shadow */
+}
+
+/* Focus state: For accessibility via keyboard navigation */
+.btn-cool:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
 caption {
   padding: 10px;
 }
