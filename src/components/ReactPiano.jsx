@@ -38,7 +38,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
 
   const debounceRef = useRef(null);
   const lastChordKeyRef = useRef("");
-  const lastRootRef = useRef(undefined);
+
   const impliedRootRef = useRef(impliedRoot);
   useEffect(() => {
     impliedRootRef.current = impliedRoot;
