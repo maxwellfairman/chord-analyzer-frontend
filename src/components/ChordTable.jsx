@@ -7,8 +7,8 @@ function ChordTable(props) {
       <thead>
         <tr>
           <th></th>
-          <th>Guess 1</th>
-          <th>Guess 2</th>
+          <th>Interpetation 1</th>
+          <th>Interpretation 2</th>
         </tr>
       </thead>
 

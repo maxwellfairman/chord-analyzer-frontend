@@ -129,7 +129,7 @@ const testAnalyses = [
     ],
   },
 ];
-const TITLES = ["Chord Analysis Guesses", "Past Analyses", "", ""];
+const TITLES = ["Current Analysis", "Past Analyses", "", ""];
 function convertData(data) {
   const info0 = data?.["Chords with roots"]?.[0];
   const info1 = data?.["Chords with roots"]?.[1];
