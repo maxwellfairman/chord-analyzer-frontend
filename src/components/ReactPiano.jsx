@@ -38,6 +38,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
 
   const synthRef = useRef(null);
   const bassSynthRef = useRef(null);
+  const lastBassRef = useRef(null);
   const audioReadyRef = useRef(false);
 
   const debounceRef = useRef(null);
@@ -118,13 +119,19 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           console.log(!playRootRef.current);
           console.log(!bassSynthRef.current);
           const bass = bassSynthRef.current;
-          if (!playRootRef.current || root === undefined || !bass) {
+          if (
+            !playRootRef.current ||
+            root === undefined ||
+            !bass ||
+            bass === lastBassRef.current
+          ) {
             console.log("should be leaving this function");
             return;
           }
+          lastBassRef.current = bass;
           console.log("return didn't work");
           const note = Tone.Frequency(root, "midi").toNote();
-          //bass.triggerAttackRelease(note, "0.7");
+          bass.triggerAttackRelease(note, "0.7");
         })
         .catch(console.error);
     }, 80);
