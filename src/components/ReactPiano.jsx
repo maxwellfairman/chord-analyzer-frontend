@@ -67,7 +67,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
       volume: -4,
       oscillator: { type: "sine" },
     }).toDestination();
-
+    console.log(bassSynthRef.current);
     initAudio.current = true;
 
     console.log("AUDIO READY", {
