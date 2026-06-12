@@ -119,7 +119,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           console.log(!bassSynthRef.current);
           const bass = bassSynthRef.current;
           if (!playRootRef.current || root === undefined || !bass) return;
-
+          console.log("return didn't work");
           const note = Tone.Frequency(root, "midi").toNote();
           bass.triggerAttackRelease(note, "0.7");
         })
