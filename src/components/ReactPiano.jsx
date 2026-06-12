@@ -68,7 +68,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     synthRef.current = poly;
 
     bassSynthRef.current = new Tone.Synth({
-      volume: -2,
+      volume: -1,
     }).toDestination();
     //console.log(bassSynthRef.current);
     initAudio.current = true;
