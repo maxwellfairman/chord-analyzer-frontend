@@ -215,6 +215,16 @@ const noteToPitchClass = {
   B: 11,
 };
 function App() {
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+  if (isMobile) {
+    return (
+      <div style={{ padding: 40, textAlign: "center" }}>
+        <h2>Desktop Required</h2>
+        <p>Please open this site on a laptop or desktop computer.</p>
+      </div>
+    );
+  }
   const [analyses, setAnalyses] = useState(testAnalyses);
   const [playRoot, setPlayRoot] = useState(false);
   const [impliedRoot, setImpliedRoot] = useState(undefined);
