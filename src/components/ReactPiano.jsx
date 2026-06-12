@@ -100,6 +100,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
                 : chordMain.root[0];
             root = noteToPitchClass[rootName] + 48;
           }
+          console.log(root);
           //only play root when button is toggled
           if (playRoot && root !== undefined && bassSynthRef.current) {
             const note = MidiNumbers.getAttributes(root).note;
