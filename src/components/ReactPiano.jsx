@@ -108,7 +108,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           const chordMain = data?.["Chords without roots"]?.[0];
           if (chordMain) {
             const rootName =
-              chordMain.root[1] === "b"
+              chordMain.root[1] === "b" || chordMain.root[1] === "#"
                 ? chordMain.root.slice(0, 2).replace("b", "♭")
                 : chordMain.root[0];
             root = noteToPitchClass[rootName] + 48;
