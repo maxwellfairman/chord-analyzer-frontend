@@ -94,15 +94,11 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     lastChordKeyRef.current = key;
 
     debounceRef.current = setTimeout(() => {
-      if (!playRootRef.current || controller.signal.aborted) return;
-      if (abortRef.current) abortRef.current.abort();
+      if (!playRootRef.current) return;
 
-      const controller = new AbortController();
-      abortRef.current = controller;
       fetch("https://chord-analyzer-backend.onrender.com/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        signal: controller.signal,
         body: JSON.stringify({ notes: snapshot }),
       }) //send request to the fastAPI
         .then((res) => res.json())
@@ -130,7 +126,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           }
           console.log("return didn't work");
           const note = Tone.Frequency(root, "midi").toNote();
-          bass.triggerAttackRelease(note, "0.7");
+          //bass.triggerAttackRelease(note, "0.7");
         })
         .catch((err) => {
           if (err.name === "AbortError") return;
