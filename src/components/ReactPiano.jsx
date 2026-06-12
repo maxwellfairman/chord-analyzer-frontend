@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Piano, KeyboardShortcuts, MidiNumbers } from "react-piano";
 import "react-piano/dist/styles.css";
+import "./pianostyle.css";
 import * as Tone from "tone";
 
-const firstNote = MidiNumbers.fromNote("c4");
-const lastNote = MidiNumbers.fromNote("f6");
+const firstNote = MidiNumbers.fromNote("c3");
+const lastNote = MidiNumbers.fromNote("c7");
+const firstKeyNote = MidiNumbers.fromNote("c4");
+const lastKeyNote = MidiNumbers.fromNote("f6");
 const noteToPitchClass = {
   C: 0,
   "D♭": 1,
@@ -20,15 +23,16 @@ const noteToPitchClass = {
   B: 11,
 };
 
-const keyboardShortcuts = KeyboardShortcuts.create({
-  firstNote,
-  lastNote,
-  keyboardConfig: KeyboardShortcuts.HOME_ROW,
-});
+//console.log(keyboardShortcuts);
 
 export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
   const [activeNotes, setActiveNotes] = useState([]);
-
+  const keyboardShortcuts = KeyboardShortcuts.create({
+    firstNote: firstKeyNote,
+    lastNote: lastKeyNote,
+    keyboardConfig: KeyboardShortcuts.HOME_ROW,
+  });
+  console.log(keyboardShortcuts);
   //ref updates regularly while state only updates with new renders, can use if data does not need to be rendered
   const notesRef = useRef(new Set());
 
@@ -40,11 +44,12 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
   const lastChordKeyRef = useRef("");
 
   const impliedRootRef = useRef(impliedRoot);
+
   useEffect(() => {
     impliedRootRef.current = impliedRoot;
   }, [impliedRoot]); //only runs when impliedRoot changes
   // ─── Audio Init ───────────────────────────────────────────
-  const initAudio = async () => {
+  const initAudio = useCallback(async () => {
     if (audioReadyRef.current) return;
     //if audio has been initiated already, skip
     await Tone.start();
@@ -60,42 +65,11 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     bassSynthRef.current = new Tone.Synth({ volume: -4 }).toDestination();
 
     audioReadyRef.current = true;
-  };
-
-  // ─── Note On ──────────────────────────────────────────────
-  const playNote = async (midiNumber) => {
-    await initAudio();
-
-    if (notesRef.current.has(midiNumber)) return;
-    notesRef.current.add(midiNumber);
-
-    const note = MidiNumbers.getAttributes(midiNumber).note;
-    synthRef.current.triggerAttack(note);
-    //start note
-    syncState();
-    scheduleAnalysis();
-  };
-
-  // ─── Note Off ─────────────────────────────────────────────
-  const stopNote = async (midiNumber) => {
-    await initAudio();
-
-    notesRef.current.delete(midiNumber);
-
-    const note = MidiNumbers.getAttributes(midiNumber).note;
-    synthRef.current.triggerRelease(note);
-    //end note
-    syncState();
-    scheduleAnalysis();
-  };
-
-  // ─── Sync UI ──────────────────────────────────────────────
+  }, []);
   const syncState = () => {
     setActiveNotes(Array.from(notesRef.current));
   };
-
-  // ─── Chord Analysis ───────────────────────────────────────
-  const scheduleAnalysis = () => {
+  const scheduleAnalysis = useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     const snapshot = Array.from(notesRef.current).sort((a, b) => a - b);
@@ -134,7 +108,81 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
         })
         .catch(console.error);
     }, 80);
-  };
+  });
+  // ─── Note On ──────────────────────────────────────────────
+  const playNote = useCallback(async (midiNumber) => {
+    await initAudio();
+    if (notesRef.current.has(midiNumber)) return;
+    notesRef.current.add(midiNumber);
+    const note = MidiNumbers.getAttributes(midiNumber).note;
+    synthRef.current.triggerAttack(note);
+    syncState();
+    scheduleAnalysis();
+  }, []); // empty deps — all state accessed via refs
+
+  const stopNote = useCallback(async (midiNumber) => {
+    await initAudio();
+    notesRef.current.delete(midiNumber);
+    const note = MidiNumbers.getAttributes(midiNumber).note;
+    synthRef.current.triggerRelease(note);
+    syncState();
+    scheduleAnalysis();
+  }, []);
+  useEffect(() => {
+    let midiAccess;
+
+    const setupMidi = async () => {
+      if (!navigator.requestMIDIAccess) {
+        console.log("Web MIDI not supported");
+        return;
+      }
+
+      try {
+        midiAccess = await navigator.requestMIDIAccess();
+
+        const handleMidiMessage = (event) => {
+          const [status, note, velocity] = event.data;
+
+          const command = status & 0xf0;
+
+          // Note On
+          if (command === 0x90 && velocity > 0) {
+            playNote(note);
+          }
+
+          // Note Off
+          if (command === 0x80 || (command === 0x90 && velocity === 0)) {
+            stopNote(note);
+          }
+        };
+
+        for (const input of midiAccess.inputs.values()) {
+          input.onmidimessage = handleMidiMessage;
+        }
+
+        console.log(
+          "Connected MIDI devices:",
+          [...midiAccess.inputs.values()].map((i) => i.name),
+        );
+      } catch (err) {
+        console.error("MIDI setup failed:", err);
+      }
+    };
+
+    setupMidi();
+
+    return () => {
+      if (midiAccess) {
+        for (const input of midiAccess.inputs.values()) {
+          input.onmidimessage = null;
+        }
+      }
+    };
+  }, []);
+
+  // ─── Sync UI ──────────────────────────────────────────────
+
+  // ─── Chord Analysis ───────────────────────────────────────
 
   // ─── Cleanup ──────────────────────────────────────────────
   useEffect(() => {
