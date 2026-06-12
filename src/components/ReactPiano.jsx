@@ -119,12 +119,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           console.log(!playRootRef.current);
           console.log(!bassSynthRef.current);
           const bass = bassSynthRef.current;
-          if (
-            !playRootRef.current ||
-            root === undefined ||
-            !bass ||
-            bass === lastBassRef.current
-          ) {
+          if (!playRootRef.current || root === undefined || !bass) {
             console.log("should be leaving this function");
             return;
           }
