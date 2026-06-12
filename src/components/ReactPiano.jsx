@@ -32,7 +32,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     lastNote: lastKeyNote,
     keyboardConfig: KeyboardShortcuts.HOME_ROW,
   });
-  console.log(keyboardShortcuts);
+  //console.log(keyboardShortcuts);
   //ref updates regularly while state only updates with new renders, can use if data does not need to be rendered
   const notesRef = useRef(new Set());
 
@@ -104,6 +104,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
 
           //only play root when button is toggled
           if (playRoot && root !== undefined && bassSynthRef.current) {
+            console.log("success");
             const note = Tone.Frequency(root, "midi").toNote();
             bassSynthRef.current.triggerAttackRelease(note, "0.5");
           }
