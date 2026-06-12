@@ -115,10 +115,12 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           console.log(root);
 
           //only play root when button is toggled
-          console.log(playRootRef.current);
+          console.log(!playRootRef.current);
           console.log(!bassSynthRef.current);
           const bass = bassSynthRef.current;
-          if (!playRootRef.current || root === undefined || !bass) return;
+          if (!playRootRef.current || root === undefined || !bass) {
+            return;
+          }
           console.log("return didn't work");
           const note = Tone.Frequency(root, "midi").toNote();
           bass.triggerAttackRelease(note, "0.7");
