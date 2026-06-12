@@ -49,23 +49,32 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     impliedRootRef.current = impliedRoot;
   }, [impliedRoot]); //only runs when impliedRoot changes
   // ─── Audio Init ───────────────────────────────────────────
-  const initAudio = useCallback(async () => {
-    if (audioReadyRef.current) return;
-    //if audio has been initiated already, skip
+  const initAudio = useRef(false);
+
+  const ensureAudio = async () => {
+    if (initAudio.current) return;
+
     await Tone.start();
-    //wait for tone.js to start
-    // FIX: maxPolyphony must be set as a property, not passed as a voice option
+    await Tone.context.resume();
+
     const poly = new Tone.PolySynth(Tone.Synth).toDestination();
-    //todestination means to send audio to speakers (final output)
     poly.maxPolyphony = 16;
-    //allows many notes to be played at once
     poly.set({ volume: -6 });
+
     synthRef.current = poly;
 
-    bassSynthRef.current = new Tone.Synth({ volume: -4 }).toDestination();
+    bassSynthRef.current = new Tone.Synth({
+      volume: -4,
+      oscillator: { type: "sine" },
+    }).toDestination();
 
-    audioReadyRef.current = true;
-  }, []);
+    initAudio.current = true;
+
+    console.log("AUDIO READY", {
+      bass: !!bassSynthRef.current,
+      poly: !!synthRef.current,
+    });
+  };
   const syncState = () => {
     setActiveNotes(Array.from(notesRef.current));
   };
@@ -105,18 +114,18 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           //only play root when button is toggled
           console.log(playRoot);
           console.log(bassSynthRef.current);
-          if (playRoot && root !== undefined && bassSynthRef.current) {
-            console.log("success");
-            const note = Tone.Frequency(root, "midi").toNote();
-            bassSynthRef.current.triggerAttackRelease(note, "0.5");
-          }
+          const bass = bassSynthRef.current;
+          if (!playRoot || root === undefined || !bass) return;
+
+          const note = Tone.Frequency(root, "midi").toNote();
+          bass.triggerAttackRelease(note, 0.5, Tone.now());
         })
         .catch(console.error);
     }, 80);
   };
   // ─── Note On ──────────────────────────────────────────────
   const playNote = useCallback(async (midiNumber) => {
-    await initAudio();
+    await ensureAudio();
     if (notesRef.current.has(midiNumber)) return;
     notesRef.current.add(midiNumber);
     const note = MidiNumbers.getAttributes(midiNumber).note;
@@ -126,7 +135,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
   }, []); // empty deps — all state accessed via refs
 
   const stopNote = useCallback(async (midiNumber) => {
-    await initAudio();
+    await ensureAudio();
     notesRef.current.delete(midiNumber);
     const note = MidiNumbers.getAttributes(midiNumber).note;
     synthRef.current.triggerRelease(note);
@@ -146,17 +155,15 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
         midiAccess = await navigator.requestMIDIAccess();
 
         const handleMidiMessage = async (event) => {
-          await initAudio();
-          const [status, note, velocity] = event.data;
+          await ensureAudio();
 
+          const [status, note, velocity] = event.data;
           const command = status & 0xf0;
 
-          // Note On
           if (command === 0x90 && velocity > 0) {
             playNote(note);
           }
 
-          // Note Off
           if (command === 0x80 || (command === 0x90 && velocity === 0)) {
             stopNote(note);
           }
