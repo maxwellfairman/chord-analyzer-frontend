@@ -94,8 +94,6 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     lastChordKeyRef.current = key;
 
     debounceRef.current = setTimeout(() => {
-      if (!playRootRef.current) return;
-
       fetch("https://chord-analyzer-backend.onrender.com/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -104,7 +102,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
         .then((res) => res.json())
         .then((data) => {
           onChordUpdate?.(data);
-
+          if (!playRootRef.current) return;
           let root = undefined;
           const chordMain = data?.["Chords without roots"]?.[0];
           if (chordMain) {
@@ -128,10 +126,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           const note = Tone.Frequency(root, "midi").toNote();
           //bass.triggerAttackRelease(note, "0.7");
         })
-        .catch((err) => {
-          if (err.name === "AbortError") return;
-          console.error(err);
-        });
+        .catch(console.error);
     }, 80);
   };
   // ─── Note On ──────────────────────────────────────────────
