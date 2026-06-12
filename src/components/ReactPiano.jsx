@@ -68,7 +68,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     synthRef.current = poly;
 
     bassSynthRef.current = new Tone.Synth({
-      volume: -4,
+      volume: -2,
     }).toDestination();
     //console.log(bassSynthRef.current);
     initAudio.current = true;
@@ -121,7 +121,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           if (!playRootRef.current || root === undefined || !bass) return;
 
           const note = Tone.Frequency(root, "midi").toNote();
-          bass.triggerAttackRelease(note, "0.5");
+          bass.triggerAttackRelease(note, "1");
         })
         .catch(console.error);
     }, 80);
