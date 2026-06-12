@@ -4,7 +4,7 @@ import "react-piano/dist/styles.css";
 import "./pianostyle.css";
 import * as Tone from "tone";
 
-const firstNote = MidiNumbers.fromNote("c3");
+const firstNote = MidiNumbers.fromNote("c2");
 const lastNote = MidiNumbers.fromNote("c7");
 const firstKeyNote = MidiNumbers.fromNote("c4");
 const lastKeyNote = MidiNumbers.fromNote("f6");
@@ -101,6 +101,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
             root = noteToPitchClass[rootName] + 48;
           }
           console.log(root);
+
           //only play root when button is toggled
           if (playRoot && root !== undefined && bassSynthRef.current) {
             const note = MidiNumbers.getAttributes(root).note;
