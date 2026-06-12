@@ -103,6 +103,8 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           console.log(root);
 
           //only play root when button is toggled
+          console.log(playRoot);
+          console.log(bassSynthRef.current);
           if (playRoot && root !== undefined && bassSynthRef.current) {
             console.log("success");
             const note = Tone.Frequency(root, "midi").toNote();
