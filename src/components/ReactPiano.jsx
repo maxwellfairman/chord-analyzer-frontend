@@ -141,7 +141,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           clearTimeout(timer);
           setStillLoading(false);
         });
-    }, 80);
+    }, 40);
   };
   // ─── Note On ──────────────────────────────────────────────
   const playNote = useCallback(async (midiNumber) => {
