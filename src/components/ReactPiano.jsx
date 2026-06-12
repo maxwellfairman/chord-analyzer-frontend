@@ -27,11 +27,13 @@ const noteToPitchClass = {
 
 export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
   const [activeNotes, setActiveNotes] = useState([]);
+  const [stillLoading, setStillLoading] = useState(false);
   const keyboardShortcuts = KeyboardShortcuts.create({
     firstNote: firstKeyNote,
     lastNote: lastKeyNote,
     keyboardConfig: KeyboardShortcuts.HOME_ROW,
   });
+  const wakeMessage = "Waiting on backend to respond...";
   //console.log(keyboardShortcuts);
   //ref updates regularly while state only updates with new renders, can use if data does not need to be rendered
   const notesRef = useRef(new Set());
@@ -53,9 +55,9 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
   useEffect(() => {
     impliedRootRef.current = impliedRoot;
   }, [impliedRoot]); //only runs when impliedRoot changes
+
   // ─── Audio Init ───────────────────────────────────────────
   const initAudio = useRef(false);
-
   const ensureAudio = async () => {
     if (initAudio.current) return;
     console.log("ensure is running");
@@ -93,8 +95,12 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     //use a consistent key to check whether the chord is already held down, ordering notes from lowest to highest
     if (key === lastChordKeyRef.current) return;
     lastChordKeyRef.current = key;
+    setStillLoading(false);
 
     debounceRef.current = setTimeout(() => {
+      const timer = setTimeout(() => {
+        setStillLoading(true);
+      }, 3000);
       fetch("https://chord-analyzer-backend.onrender.com/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -128,7 +134,13 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           const note = Tone.Frequency(root, "midi").toNote();
           bass.triggerAttackRelease(note, "0.7");
         })
-        .catch(console.error);
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          clearTimeout(timer);
+          setStillLoading(false);
+        });
     }, 80);
   };
   // ─── Note On ──────────────────────────────────────────────
@@ -225,6 +237,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
         width={600}
         keyboardShortcuts={keyboardShortcuts}
       />
+      <p>{stillLoading ? wakeMessage : ""}</p>
     </div>
   );
 }
