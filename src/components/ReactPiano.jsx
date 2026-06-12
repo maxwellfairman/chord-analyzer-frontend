@@ -121,7 +121,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           if (!playRootRef.current || root === undefined || !bass) return;
 
           const note = Tone.Frequency(root, "midi").toNote();
-          bass.triggerAttackRelease(note, "1");
+          bass.triggerAttackRelease(note, "0.7");
         })
         .catch(console.error);
     }, 80);
