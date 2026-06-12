@@ -53,7 +53,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
 
   const ensureAudio = async () => {
     if (initAudio.current) return;
-
+    console.log("ensure is running");
     await Tone.start();
     await Tone.context.resume();
 
