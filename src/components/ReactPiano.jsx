@@ -43,7 +43,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
   const debounceRef = useRef(null);
   const lastChordKeyRef = useRef("");
   const playRootRef = useRef(playRoot);
-
+  const abortRef = useRef(null);
   useEffect(() => {
     playRootRef.current = playRoot;
   }, [playRoot]);
@@ -94,10 +94,15 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     lastChordKeyRef.current = key;
 
     debounceRef.current = setTimeout(() => {
-      if (!playRootRef.current) return;
+      if (!playRootRef.current || controller.signal.aborted) return;
+      if (abortRef.current) abortRef.current.abort();
+
+      const controller = new AbortController();
+      abortRef.current = controller;
       fetch("https://chord-analyzer-backend.onrender.com/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({ notes: snapshot }),
       }) //send request to the fastAPI
         .then((res) => res.json())
@@ -127,7 +132,10 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           const note = Tone.Frequency(root, "midi").toNote();
           bass.triggerAttackRelease(note, "0.7");
         })
-        .catch(console.error);
+        .catch((err) => {
+          if (err.name === "AbortError") return;
+          console.error(err);
+        });
     }, 80);
   };
   // ─── Note On ──────────────────────────────────────────────
