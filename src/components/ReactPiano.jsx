@@ -104,13 +104,13 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
 
           //only play root when button is toggled
           if (playRoot && root !== undefined && bassSynthRef.current) {
-            const note = MidiNumbers.getAttributes(root).note;
+            const note = Tone.Frequency(root, "midi").toNote();
             bassSynthRef.current.triggerAttackRelease(note, "0.5");
           }
         })
         .catch(console.error);
     }, 80);
-  });
+  }, []);
   // ─── Note On ──────────────────────────────────────────────
   const playNote = useCallback(async (midiNumber) => {
     await initAudio();
@@ -142,7 +142,8 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
       try {
         midiAccess = await navigator.requestMIDIAccess();
 
-        const handleMidiMessage = (event) => {
+        const handleMidiMessage = async (event) => {
+          await initAudio();
           const [status, note, velocity] = event.data;
 
           const command = status & 0xf0;
