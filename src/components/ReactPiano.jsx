@@ -69,7 +69,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
   const syncState = () => {
     setActiveNotes(Array.from(notesRef.current));
   };
-  const scheduleAnalysis = useCallback(() => {
+  const scheduleAnalysis = () => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     const snapshot = Array.from(notesRef.current).sort((a, b) => a - b);
@@ -113,7 +113,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
         })
         .catch(console.error);
     }, 80);
-  }, []);
+  };
   // ─── Note On ──────────────────────────────────────────────
   const playNote = useCallback(async (midiNumber) => {
     await initAudio();
