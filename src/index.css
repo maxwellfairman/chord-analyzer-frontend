@@ -64,7 +64,9 @@ tr:nth-child(odd) td {
   /* Step 4: Smooth micro-interactions */
   transition: all 0.2s ease-in-out;
 }
-
+#explanation-info {
+  text-align: center;
+}
 /* Hover state: When the user moves their mouse over it */
 .btn-cool:hover {
   background-color: #2563eb; /* Slightly darker blue */
