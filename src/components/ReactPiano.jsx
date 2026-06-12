@@ -42,7 +42,11 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
 
   const debounceRef = useRef(null);
   const lastChordKeyRef = useRef("");
+  const playRootRef = useRef(playRoot);
 
+  useEffect(() => {
+    playRootRef.current = playRoot;
+  }, [playRoot]);
   const impliedRootRef = useRef(impliedRoot);
 
   useEffect(() => {
@@ -65,9 +69,8 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
 
     bassSynthRef.current = new Tone.Synth({
       volume: -4,
-      oscillator: { type: "sine" },
     }).toDestination();
-    console.log(bassSynthRef.current);
+    //console.log(bassSynthRef.current);
     initAudio.current = true;
 
     console.log("AUDIO READY", {
@@ -112,10 +115,10 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           console.log(root);
 
           //only play root when button is toggled
-          console.log(playRoot);
-          console.log(bassSynthRef.current);
+          console.log(playRootRef.current);
+          console.log(!bassSynthRef.current);
           const bass = bassSynthRef.current;
-          if (!playRoot || root === undefined || !bass) return;
+          if (!playRootRef.current || root === undefined || !bass) return;
 
           const note = Tone.Frequency(root, "midi").toNote();
           bass.triggerAttackRelease(note, 0.5, Tone.now());
