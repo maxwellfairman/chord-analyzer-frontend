@@ -33,7 +33,14 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     lastNote: lastKeyNote,
     keyboardConfig: KeyboardShortcuts.HOME_ROW,
   });
-  const wakeMessage = "Waiting on backend to respond...";
+  const wakeMessage = (
+    <p>
+      Waiting on backend to respond...
+      <a src="https://chord-analyzer-backend.onrender.com/analyze">
+        See status
+      </a>
+    </p>
+  );
   //console.log(keyboardShortcuts);
   //ref updates regularly while state only updates with new renders, can use if data does not need to be rendered
   const notesRef = useRef(new Set());
