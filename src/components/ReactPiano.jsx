@@ -36,7 +36,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
   const wakeMessage = (
     <p>
       Waiting on backend to respond...
-      <a src="https://chord-analyzer-backend.onrender.com/analyze">
+      <a href="https://chord-analyzer-backend.onrender.com/analyze">
         See status
       </a>
     </p>
