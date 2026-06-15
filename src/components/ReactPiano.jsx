@@ -143,13 +143,13 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
           console.log("return didn't work");
           const note = Tone.Frequency(root, "midi").toNote();
           bass.triggerAttackRelease(note, "0.7");
+          setStillLoading(false);
         })
         .catch((error) => {
           console.log(error);
         })
         .finally(() => {
           clearTimeout(timer);
-          setStillLoading(false);
         });
     }, 80);
   };
