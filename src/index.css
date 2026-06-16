@@ -8,14 +8,12 @@ table {
   letter-spacing: 1px;
   font-size: 0.8rem;
 }
-h2 {
-  text-align: center;
-}
-h1 {
-  text-align: center;
-}
+h1,
+h2,
 h3 {
+  max-width: 800px;
   text-align: center;
+  margin: auto;
 }
 td,
 th {
