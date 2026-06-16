@@ -7,7 +7,7 @@ function ChordTable(props) {
       <thead>
         <tr>
           <th></th>
-          <th>Interpetation 1</th>
+          <th>Interpretation 1</th>
           <th>Interpretation 2</th>
         </tr>
       </thead>
