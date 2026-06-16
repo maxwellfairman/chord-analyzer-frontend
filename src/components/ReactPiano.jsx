@@ -105,53 +105,54 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     //use a consistent key to check whether the chord is already held down, ordering notes from lowest to highest
     if (key === lastChordKeyRef.current) return;
     lastChordKeyRef.current = key;
-    //setStillLoading(false);
+    setStillLoading(false);
+    if (!stillLoading) {
+      debounceRef.current = setTimeout(() => {
+        const timer = setTimeout(() => {
+          setStillLoading(true);
+        }, 3000);
+        fetch("https://chord-analyzer-backend.onrender.com/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ notes: snapshot }),
+        }) //send request to the fastAPI
+          .then((res) => res.json())
+          .then((data) => {
+            onChordUpdate?.(data);
+            if (!playRootRef.current) return;
+            let root = undefined;
+            const chordMain = data?.["Chords without roots"]?.[0];
+            if (chordMain) {
+              const rootName =
+                chordMain.root[1] === "b" || chordMain.root[1] === "#"
+                  ? chordMain.root.slice(0, 2).replace("b", "♭")
+                  : chordMain.root[0];
+              root = noteToPitchClass[rootName] + 48;
+            }
+            console.log(root);
 
-    debounceRef.current = setTimeout(() => {
-      const timer = setTimeout(() => {
-        setStillLoading(true);
-      }, 3000);
-      fetch("https://chord-analyzer-backend.onrender.com/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notes: snapshot }),
-      }) //send request to the fastAPI
-        .then((res) => res.json())
-        .then((data) => {
-          onChordUpdate?.(data);
-          if (!playRootRef.current) return;
-          let root = undefined;
-          const chordMain = data?.["Chords without roots"]?.[0];
-          if (chordMain) {
-            const rootName =
-              chordMain.root[1] === "b" || chordMain.root[1] === "#"
-                ? chordMain.root.slice(0, 2).replace("b", "♭")
-                : chordMain.root[0];
-            root = noteToPitchClass[rootName] + 48;
-          }
-          console.log(root);
-
-          //only play root when button is toggled
-          console.log(!playRootRef.current);
-          console.log(!bassSynthRef.current);
-          const bass = bassSynthRef.current;
-          if (!playRootRef.current || root === undefined || !bass) {
-            console.log("should be leaving this function");
-            return;
-          }
-          lastBassRef.current = bass;
-          console.log("return didn't work");
-          const note = Tone.Frequency(root, "midi").toNote();
-          bass.triggerAttackRelease(note, "0.7");
-          setStillLoading(false);
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(() => {
-          clearTimeout(timer);
-        });
-    }, 80);
+            //only play root when button is toggled
+            console.log(!playRootRef.current);
+            console.log(!bassSynthRef.current);
+            const bass = bassSynthRef.current;
+            if (!playRootRef.current || root === undefined || !bass) {
+              console.log("should be leaving this function");
+              return;
+            }
+            lastBassRef.current = bass;
+            console.log("return didn't work");
+            const note = Tone.Frequency(root, "midi").toNote();
+            bass.triggerAttackRelease(note, "0.7");
+            setStillLoading(false);
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+          .finally(() => {
+            clearTimeout(timer);
+          });
+      }, 80);
+    }
   };
   // ─── Note On ──────────────────────────────────────────────
   const playNote = useCallback(async (midiNumber) => {
