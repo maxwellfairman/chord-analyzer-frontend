@@ -189,7 +189,7 @@ function convertData(data) {
           ? {
               main: info3.root.replaceAll("b", "♭") + info3.quality,
               sup: info3.extensions.join(",").replaceAll("b", "♭"),
-              slash: "(Implied root: " + info2.root.replaceAll("b", "♭") + ")",
+              slash: "(Implied root: " + info3.root.replaceAll("b", "♭") + ")",
             }
           : {
               main: "",
