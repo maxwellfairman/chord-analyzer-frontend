@@ -105,7 +105,7 @@ export default function ReactPiano({ onChordUpdate, playRoot, impliedRoot }) {
     //use a consistent key to check whether the chord is already held down, ordering notes from lowest to highest
     if (key === lastChordKeyRef.current) return;
     lastChordKeyRef.current = key;
-    setStillLoading(false);
+    //setStillLoading(false);
 
     debounceRef.current = setTimeout(() => {
       const timer = setTimeout(() => {
